@@ -98,9 +98,10 @@ def create_fa_node(name, classes: str = None, style="fa"):
     )
 
 
-def fontawesome_role(role, rawtext, text, lineno, inliner, options={}, content=[]):
+def fontawesome_role(role, rawtext, text, lineno, inliner, options={}, content=[], style="fa"):
     try:
         args, kwargs = string_to_func_inputs(text)
+        kwargs.setdefault('style', style)
         node = create_fa_node(*args, **kwargs)
     except Exception as err:
         msg = inliner.reporter.error(
@@ -109,6 +110,11 @@ def fontawesome_role(role, rawtext, text, lineno, inliner, options={}, content=[
         prb = inliner.problematic(rawtext, rawtext, msg)
         return [prb], [msg]
     return [node], []
+
+
+def fontawesome_5_role(*args, style="fas", **kwargs):
+    """Use the 'fas' class by default for use with Font Awesome 5+"""
+    return fontawesome_role(args, style=style, **kwargs)
 
 
 def visit_fontawesome_html(self, node):
@@ -133,6 +139,7 @@ def add_fontawesome_pkg(app, config):
 def setup_icons(app):
     app.add_role("opticon", opticon_role)
     app.add_role("fa", fontawesome_role)
+    app.add_role("fas", fontawesome_5_role)
 
     app.add_config_value("panels_add_fontawesome_latex", False, "env")
     app.connect("config-inited", add_fontawesome_pkg)
